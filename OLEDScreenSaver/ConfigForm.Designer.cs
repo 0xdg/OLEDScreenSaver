@@ -66,6 +66,7 @@
             // 
             // screenNameTextbox
             // 
+            this.screenNameTextbox.Enabled = false;
             this.screenNameTextbox.Location = new System.Drawing.Point(273, 50);
             this.screenNameTextbox.Name = "screenNameTextbox";
             this.screenNameTextbox.Size = new System.Drawing.Size(266, 26);

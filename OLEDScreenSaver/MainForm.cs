@@ -120,8 +120,8 @@ namespace OLEDScreenSaver
             if (OLED_screen != null)
             {
                 Point p = new Point();
-                p.X = OLED_screen.Bounds.Location.X;
-                p.Y = OLED_screen.Bounds.Location.Y;
+                p.X = Screen.PrimaryScreen.Bounds.Location.X;
+                p.Y = Screen.PrimaryScreen.Bounds.Location.Y;
                 this.Location = p;
                 //LogHelper.Log("Found screen and setting pos " + p.X + " " + p.Y);
                 //LogHelper.Log("OLED_screen.Bounds.Width " + OLED_screen.Bounds.Width + " OLED_screen.Bounds.Height " + OLED_screen.Bounds.Height + " OLED_screen.Bounds.Size " + OLED_screen.Bounds.Size);
