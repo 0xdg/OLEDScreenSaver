@@ -12,12 +12,14 @@ namespace OLEDScreenSaver
     {
         const String DEFAULT_OLED_AWAITED_NAME = "LG TV SSCR";
         const String DEFAULT_TIMEOUT = "5";
+        const String DEFAULT_POLL_RATE = "500";
         public static void InitValues()
         {
             if (!RegistryValuesSet())
             {
                 SaveTimeout(DEFAULT_TIMEOUT);
                 SaveScreenName(DEFAULT_OLED_AWAITED_NAME);
+                SavePollRate(DEFAULT_POLL_RATE);
             }
         }
 
@@ -28,6 +30,8 @@ namespace OLEDScreenSaver
             var value = key.GetValue("Timeout", "No Value");
             if (value.ToString() == "No Value") { return false; }
             value = key.GetValue("ScreenName", "No Value");
+            if (value.ToString() == "No Value") { return false; }
+            value = key.GetValue("PollRate", "No Value");
             if (value.ToString() == "No Value") { return false; }
             return true;
         }
@@ -85,6 +89,33 @@ namespace OLEDScreenSaver
             if (key != null)
             {
                 value = key.GetValue("ScreenName").ToString();
+                key.Close();
+            }
+            return value;
+        }
+
+        public static Boolean SavePollRate(String pollrate)
+        {
+            if (!int.TryParse(pollrate, out _))
+            {
+                string message = "The poll rate value is not an integer.";
+                string caption = "Error While Setting poll rate";
+                MessageBoxButtons buttons = MessageBoxButtons.OK;
+                MessageBox.Show(message, caption, buttons);
+            }
+            RegistryKey key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\OLEDScreenSaver");
+            key.SetValue("PollRate", pollrate.ToString());
+            key.Close();
+            return true;
+        }
+
+        public static int LoadPollRate()
+        {
+            RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\OLEDScreenSaver");
+            int value = int.Parse(DEFAULT_POLL_RATE);
+            if (key != null)
+            {
+                value = int.Parse(key.GetValue("PollRate").ToString());
                 key.Close();
             }
             return value;

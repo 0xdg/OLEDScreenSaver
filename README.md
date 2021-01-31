@@ -22,8 +22,12 @@ this.Location = p;`
 This does not restore the window location to the selected screen after it has been turned to sleep or powered off. The workaround for this is always using the primary screen for detecting the bounds. If you find a way to get Location to target the right screen without restarting the app, please let me know.  
 In the meantime, we will use the primary screen for bounds detection. Seems to work regardless of past screen state.  
 
-You may want to Exit the program after using it instead of killing it so it removes any Windows hooks in place.
-
 # Notes
+
+Now uses polling of last windows input. Polling time can be adjusted in the settings, a range between 500-1000 is generally ok for performances.  
+The reasoning behind this is to get rid of any windows hook on mouse or keyboard events. These can slow down your system and probably not good for games?
+The counter part to this is the black screen could take the entire polling time to disappear.
+
+Please, let me know if there are any performances impact in-game after the black screen has disappeared.  
 
 Tested on Windows 10 18363.1316, not sure about the other versions.

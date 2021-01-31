@@ -212,6 +212,20 @@ namespace OLEDScreenSaver
         public static extern bool TranslateMessage([In] ref Message lpMsg);
         [DllImport("user32.dll")]
         public static extern IntPtr DispatchMessage([In] ref Message lpmsg);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct LASTINPUTINFO
+        {
+            public static readonly int SizeOf = Marshal.SizeOf(typeof(LASTINPUTINFO));
+
+            [MarshalAs(UnmanagedType.U4)]
+            public UInt32 cbSize;
+            [MarshalAs(UnmanagedType.U4)]
+            public UInt32 dwTime;
+        }
+
+        [DllImport("user32.dll")]
+        public static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
     }
 }
 

@@ -23,8 +23,6 @@ namespace OLEDScreenSaver
         private MenuItem menuItem2;
         private MenuItem menuItem3;
         private ScreenSaver screenSaver;
-        private KeyboardInput keyboardInput;
-        private MouseInput mouseInput;
 
         void MonitorOnChanged(object sender, EventArgs e)
         {
@@ -34,8 +32,6 @@ namespace OLEDScreenSaver
         public MainForm()
         {
             InitializeComponent();
-            this.Icon = Properties.Resources.Alecive_Flatwoken_Apps_Computer_Screensaver;
-            this.notifyIcon1.Icon = Properties.Resources.Alecive_Flatwoken_Apps_Computer_Screensaver;
             RegistryHelper.InitValues();
 
             this.WindowState = FormWindowState.Minimized;
@@ -62,15 +58,15 @@ namespace OLEDScreenSaver
             this.menuItem3.Text = "Exit";
             this.menuItem3.Click += new System.EventHandler(this.menuItem3_Click);
             this.notifyIcon1.ContextMenu = this.contextMenu1;
+            notifyIcon1.Visible = true;
+            this.notifyIcon1.Icon = new Icon(Properties.Resources.Alecive_Flatwoken_Apps_Computer_Screensaver, 40, 40);
+
+            Icon = Properties.Resources.Alecive_Flatwoken_Apps_Computer_Screensaver;
 
             screenSaver = new ScreenSaver();
             screenSaver.RegisterHideFormCallback(HideFormCallback);
             screenSaver.RegisterShowFormCallback(ShowFormCallback);
-            keyboardInput = new KeyboardInput();
-            keyboardInput.RegisterEventHappenedCallback(screenSaver.InputEventCallback);
-            mouseInput = new MouseInput();
-            mouseInput.RegisterEventHappenedCallback(screenSaver.InputEventCallback);
-            mouseInput.SetHook();
+            screenSaver.Launch();
             Hide();
         }
 
@@ -95,25 +91,28 @@ namespace OLEDScreenSaver
 
         public void HideFormCallback()
         {
-            Console.WriteLine("HideFormCallback");
+            LogHelper.Log("HideFormCallback");
             Invoke(new Action(() => {
-                Hide();
+                // Hide();
                 this.WindowState = FormWindowState.Minimized;
-                Cursor.Show();
+                // Cursor.Show();
+                // SendToBack();
+                TopMost = false;
                 Win32Helper.ShowCursor();
             }));
         }
 
         public void ShowFormCallback()
         {
-            Console.WriteLine("ShowFormCallback");
+            LogHelper.Log("ShowFormCallback");
             Invoke(new Action(() => {
                 if (SetFormToOLEDScreen())
                 {
-                    Show();
+                    // Show();
                     this.WindowState = FormWindowState.Maximized;
-                    Cursor.Hide();
-                    this.BringToFront();
+                    // Cursor.Hide();
+                    // BringToFront();
+                    TopMost = true;
                     Win32Helper.HideCursor();
                 }
             }));
@@ -157,15 +156,14 @@ namespace OLEDScreenSaver
             var dialogResult = config.ShowDialog();
             if (dialogResult == DialogResult.Yes)
             {
-                screenSaver.StartTimer(true);
+                screenSaver.UpdateTimeout();
+                screenSaver.UpdatePollRate();
             }
         }
 
         private void menuItem3_Click(object Sender, EventArgs e)
         {
             screenSaver.PauseScreensaver();
-            keyboardInput.RemoveHook();
-            mouseInput.RemoveHook();
             Console.WriteLine("Exiting...");
             this.Close();
         }

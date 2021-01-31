@@ -15,29 +15,78 @@ namespace OLEDScreenSaver
         public static Action showFormCallback;
         public static Action hideFormCallback;
         public static bool paused = false;
+        public static bool displayed = false;
+        private uint thresholdTime = 0;
+        private uint pollrate = 0;
+
         public ScreenSaver()
         {
-            screenSaverTimer = new System.Timers.Timer(RegistryHelper.LoadTimeout() * 60 * 1000);
-            screenSaverTimer.Elapsed += new System.Timers.ElapsedEventHandler(OnCreateScreensaver);
+            thresholdTime = (uint)RegistryHelper.LoadTimeout() * 1000 * 60;
+            pollrate = (uint)RegistryHelper.LoadPollRate();
+        }
+
+        public void Launch()
+        {
+            if (screenSaverTimer != null)
+            {
+                screenSaverTimer.Stop();
+                screenSaverTimer.Close();
+            }
+            screenSaverTimer = new System.Timers.Timer(pollrate);
+            screenSaverTimer.Elapsed += new System.Timers.ElapsedEventHandler(Tick);
             screenSaverTimer.Enabled = true;
             LogHelper.Log("Timer launched");
-        }    
-        
-        public void OnCreateScreensaver(object source, System.Timers.ElapsedEventArgs e)
+        }
+
+        public void Tick(object source, System.Timers.ElapsedEventArgs e)
         {
-            LogHelper.Log("Creating screensaver");
+            uint time = GetLastInputTime();
+            if (time > thresholdTime)
+            {
+                OnCreateScreensaver();
+            }
+            else
+            {
+                OnCloseScreensaver();
+            }
+        }
+
+        static uint GetLastInputTime()
+        {
+            uint idleTime = 0;
+            Win32Helper.LASTINPUTINFO lastInputInfo = new Win32Helper.LASTINPUTINFO();
+            lastInputInfo.cbSize = (uint)Marshal.SizeOf(lastInputInfo);
+            lastInputInfo.dwTime = 0;
+
+            uint envTicks = (uint)Environment.TickCount;
+
+            if (Win32Helper.GetLastInputInfo(ref lastInputInfo))
+            {
+                uint lastInputTick = lastInputInfo.dwTime;
+
+                idleTime = envTicks - lastInputTick;
+            }
+            Console.WriteLine("idleTime " + idleTime);
+
+            return idleTime;
+        }
+
+        public void OnCreateScreensaver()
+        {
             if (!paused)
             {
+                LogHelper.Log("Creating screensaver");
+                displayed = true;
                 showFormCallback();
-                StopTimer();
             }
         }
 
         public static void OnCloseScreensaver()
         {
-            Console.WriteLine("Closing screensaver");
-            if (!paused)
+            if (!paused && displayed)
             {
+                Console.WriteLine("Closing screensaver");
+                displayed = false;
                 hideFormCallback();
             }
         }
@@ -51,7 +100,7 @@ namespace OLEDScreenSaver
         public void ResumeScreensaver()
         {
             paused = false;
-            StartTimer(false);
+            StartTimer();
         }
 
         public void RegisterShowFormCallback(Action pShowFormCallback)
@@ -64,12 +113,18 @@ namespace OLEDScreenSaver
             hideFormCallback = pHideFormCallback;
         }
 
-        public void StartTimer(Boolean refresh)
+        public void UpdateTimeout()
         {
-            if (refresh)
-            {
-                screenSaverTimer.Interval = RegistryHelper.LoadTimeout() * 60 * 1000;
-            }
+            thresholdTime = (uint)RegistryHelper.LoadTimeout() * 60 * 1000;
+        }
+        public void UpdatePollRate()
+        {
+            pollrate = (uint)RegistryHelper.LoadPollRate();
+            Launch();
+        }
+
+        public void StartTimer()
+        {
             screenSaverTimer.Stop();
             screenSaverTimer.Start();
         }
@@ -77,13 +132,6 @@ namespace OLEDScreenSaver
         public void StopTimer()
         {
             screenSaverTimer.Stop();
-        }
-
-        public void InputEventCallback()
-        {
-            Console.WriteLine("InputEventCallback called");
-            StartTimer(false);
-            OnCloseScreensaver();
         }
     }
 }

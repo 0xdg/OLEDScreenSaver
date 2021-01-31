@@ -20,6 +20,7 @@ namespace OLEDScreenSaver
             startupCheckbox.Checked = RegistryHelper.LoadStartup();
             screenNameTextbox.Text = RegistryHelper.LoadScreenName();
             timeoutTextbox.Text = RegistryHelper.LoadTimeout().ToString();
+            pollRateTextbox.Text = RegistryHelper.LoadPollRate().ToString();
             this.screenSaver = pScreenSaver;
         }
 
@@ -58,7 +59,8 @@ namespace OLEDScreenSaver
             }
 
             if (!RegistryHelper.SaveScreenName(screenNameTextbox.Text) ||
-                !RegistryHelper.SaveTimeout(timeoutTextbox.Text))
+                !RegistryHelper.SaveTimeout(timeoutTextbox.Text) ||
+                !RegistryHelper.SavePollRate(pollRateTextbox.Text))
             {
                 return;
             }
