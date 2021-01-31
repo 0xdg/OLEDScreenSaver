@@ -14,6 +14,7 @@ namespace OLEDScreenSaver
         private System.Timers.Timer screenSaverTimer;
         public static Action showFormCallback;
         public static Action hideFormCallback;
+        public static bool paused = false;
         public ScreenSaver()
         {
             screenSaverTimer = new System.Timers.Timer(RegistryHelper.LoadTimeout() * 60 * 1000);
@@ -25,23 +26,31 @@ namespace OLEDScreenSaver
         public void OnCreateScreensaver(object source, System.Timers.ElapsedEventArgs e)
         {
             LogHelper.Log("Creating screensaver");
-            showFormCallback();
-            StopTimer();
+            if (!paused)
+            {
+                showFormCallback();
+                StopTimer();
+            }
         }
 
         public static void OnCloseScreensaver()
         {
             Console.WriteLine("Closing screensaver");
-            hideFormCallback();
+            if (!paused)
+            {
+                hideFormCallback();
+            }
         }
 
         public void PauseScreensaver()
         {
+            paused = true;
             StopTimer();
         }
 
         public void ResumeScreensaver()
         {
+            paused = false;
             StartTimer(false);
         }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using System.Messaging;
 
 namespace OLEDScreenSaver
 {
@@ -171,6 +172,29 @@ namespace OLEDScreenSaver
             SetWindowPlacement(windowHandle, ref placement);
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        public struct POINT
+        {
+            public int X;
+            public int Y;
+
+            public POINT(int x, int y)
+            {
+                this.X = x;
+                this.Y = y;
+            }
+
+            public static implicit operator System.Drawing.Point(POINT p)
+            {
+                return new System.Drawing.Point(p.X, p.Y);
+            }
+
+            public static implicit operator POINT(System.Drawing.Point p)
+            {
+                return new POINT(p.X, p.Y);
+            }
+        }
+
         public static WINDOWPLACEMENT GetPlacement(IntPtr windowHandle)
         {
             WINDOWPLACEMENT placement = new WINDOWPLACEMENT();
@@ -178,6 +202,16 @@ namespace OLEDScreenSaver
 
             return placement;
         }
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        public static extern IntPtr GetModuleHandle(string lpModuleName);
+
+        [DllImport("user32.dll")]
+        public static extern bool GetMessage(ref Message lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
+        [DllImport("user32.dll")]
+        public static extern bool TranslateMessage([In] ref Message lpMsg);
+        [DllImport("user32.dll")]
+        public static extern IntPtr DispatchMessage([In] ref Message lpmsg);
     }
 }
 

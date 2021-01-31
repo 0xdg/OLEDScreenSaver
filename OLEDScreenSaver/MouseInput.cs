@@ -3,29 +3,53 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
+using System.Diagnostics;
+using System.ComponentModel;
+using System.Messaging;
+using System.IO;
+using System.Runtime;
 
 namespace OLEDScreenSaver
 {
     class MouseInput
     {
-        public event EventHandler<EventArgs> KeyBoardKeyPressed;
+        public event EventHandler<EventArgs> mouseMoved;
 
         private Win32Helper.HookDelegate mouseDelegate;
         private IntPtr mouseHandle;
+        private const Int32 WH_MOUSE = 7;
         private const Int32 WH_MOUSE_LL = 14;
         public Action event_happened_callback;
+        private Thread hookThread;
 
         public MouseInput()
         {
             mouseDelegate = MouseHookDelegate;
-            SetHook();
         }
 
         public void SetHook()
         {
-            mouseHandle = Win32Helper.SetWindowsHookEx(
-                WH_MOUSE_LL, mouseDelegate, IntPtr.Zero, 0);
+            hookThread = new Thread(SetHookForThread);
+            hookThread.IsBackground = true;
+            hookThread.Start();
+        }
+
+        public void SetHookForThread()
+        {
+            using (Process curProcess = Process.GetCurrentProcess())
+            using (ProcessModule curModule = curProcess.MainModule)
+            {
+                mouseHandle = Win32Helper.SetWindowsHookEx(WH_MOUSE_LL, mouseDelegate, Win32Helper.GetModuleHandle(curModule.ModuleName), 0);
+            }
             LogHelper.Log("Mouse Hook set");
+
+            Message msg = new Message();
+            while (!Win32Helper.GetMessage(ref msg, IntPtr.Zero, 0, 0))
+            {
+                Win32Helper.TranslateMessage(ref msg);
+                Win32Helper.DispatchMessage(ref msg);
+            }
         }
 
         public void RemoveHook()
@@ -48,14 +72,16 @@ namespace OLEDScreenSaver
                 return Win32Helper.CallNextHookEx(
                     mouseHandle, Code, wParam, lParam);
             }
+            else
+            {
+                if (mouseMoved != null)
+                    mouseMoved(this, new EventArgs());
 
-            if (KeyBoardKeyPressed != null)
-                KeyBoardKeyPressed(this, new EventArgs());
+                event_happened_callback();
 
-            event_happened_callback();
-
-            return Win32Helper.CallNextHookEx(
-                mouseHandle, Code, wParam, lParam);
+                return Win32Helper.CallNextHookEx(
+                    mouseHandle, Code, wParam, lParam);
+            }
         }
     }
 }

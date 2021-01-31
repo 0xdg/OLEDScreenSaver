@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -70,9 +70,9 @@ namespace OLEDScreenSaver
             keyboardInput.RegisterEventHappenedCallback(screenSaver.InputEventCallback);
             mouseInput = new MouseInput();
             mouseInput.RegisterEventHappenedCallback(screenSaver.InputEventCallback);
+            mouseInput.SetHook();
             Hide();
         }
-
 
         private Boolean SetFormToOLEDScreen()
         {
@@ -140,16 +140,12 @@ namespace OLEDScreenSaver
             if (this.menuItem1.Checked == false)
             {
                 screenSaver.PauseScreensaver();
-                keyboardInput.RemoveHook();
-                mouseInput.RemoveHook();
                 this.menuItem1.Checked = true;
                 Console.WriteLine("Paused.");
             }
             else
             {
                 screenSaver.ResumeScreensaver();
-                keyboardInput.SetHook();
-                mouseInput.SetHook();
                 this.menuItem1.Checked = false;
                 Console.WriteLine("Resumed.");
             }
@@ -167,6 +163,10 @@ namespace OLEDScreenSaver
 
         private void menuItem3_Click(object Sender, EventArgs e)
         {
+            screenSaver.PauseScreensaver();
+            keyboardInput.RemoveHook();
+            mouseInput.RemoveHook();
+            Console.WriteLine("Exiting...");
             this.Close();
         }
 
