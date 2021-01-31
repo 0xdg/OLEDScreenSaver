@@ -35,16 +35,16 @@ namespace OLEDScreenSaver
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
-            var screen = ScreenHelper.FindScreen(screenNameTextbox.Text);
-            if (screen == null)
-            {
-                string message = "The screen name could not be found, are you sure you entered it correctly? Check the Windows display settings to get the proper name.";
-                string caption = "Error While Setting ScreenName";
-                MessageBoxButtons buttons = MessageBoxButtons.OK;
-                MessageBox.Show(message, caption, buttons);
-                this.Close();
-                return;
-            }
+            //var screen = ScreenHelper.FindScreen(screenNameTextbox.Text);
+            //if (screen == null)
+            //{
+            //    string message = "The screen name could not be found, are you sure you entered it correctly? Check the Windows display settings to get the proper name.";
+            //    string caption = "Error While Setting ScreenName";
+            //    MessageBoxButtons buttons = MessageBoxButtons.OK;
+            //    MessageBox.Show(message, caption, buttons);
+            //    this.Close();
+            //    return;
+            //}
 
             if (!int.TryParse(timeoutTextbox.Text, out _))
             {

@@ -12,6 +12,8 @@ using System.Management;
 using Microsoft.WindowsAPICodePack.ApplicationServices;
 using System.Windows.Interop;
 
+// Icon by alecive from https://iconarchive.com/show/flatwoken-icons-by-alecive/Apps-Computer-Screensaver-icon.html
+
 namespace OLEDScreenSaver
 {
     public partial class MainForm : Form
