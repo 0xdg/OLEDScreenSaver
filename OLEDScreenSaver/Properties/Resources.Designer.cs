@@ -59,5 +59,15 @@ namespace OLEDScreenSaver.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon Alecive_Flatwoken_Apps_Computer_Screensaver {
+            get {
+                object obj = ResourceManager.GetObject("Alecive_Flatwoken_Apps_Computer_Screensaver", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
     }
 }

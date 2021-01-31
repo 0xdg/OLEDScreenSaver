@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -11,6 +11,8 @@ using System.Runtime.InteropServices;
 using System.Management;
 using Microsoft.WindowsAPICodePack.ApplicationServices;
 using System.Windows.Interop;
+
+// Icon by alecive from https://iconarchive.com/show/flatwoken-icons-by-alecive/Apps-Computer-Screensaver-icon.html
 
 namespace OLEDScreenSaver
 {
@@ -29,53 +31,12 @@ namespace OLEDScreenSaver
             LogHelper.Log(string.Format("Monitor status changed (new status: {0})", PowerManager.IsMonitorOn ? "On" : "Off"));
         }
 
-        //private HwndSource _HwndSource;
-        //private readonly IntPtr _ScreenStateNotify;
-
-
-//        private IntPtr HwndHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-//        {
-//            handler of console display state system event
-//            if (msg == Win32Helper.WM_POWERBROADCAST)
-//            {
-//                if (wParam.ToInt32() == Win32Helper.PBT_POWERSETTINGCHANGE)
-//                {
-//                    var s = (Win32Helper.POWERBROADCAST_SETTING)Marshal.PtrToStructure(lParam, typeof(Win32Helper.POWERBROADCAST_SETTING));
-//                    if (s.PowerSetting == Win32Helper.GUID_CONSOLE_DISPLAY_STATE)
-//                    {
-//                        LogHelper.Log("Event on screen happened!");
-//                    }
-//}
-//            }
-
-//            return IntPtr.Zero;
-//        }
-
-//        ~MainForm()
-//        {
-//            unregister for console display state system event 
-
-//           _HwndSource.RemoveHook(HwndHook);
-//            Win32Helper.UnregisterPowerSettingNotification(_ScreenStateNotify);
-//        }
-
         public MainForm()
         {
             InitializeComponent();
+            this.Icon = Properties.Resources.Alecive_Flatwoken_Apps_Computer_Screensaver;
+            this.notifyIcon1.Icon = Properties.Resources.Alecive_Flatwoken_Apps_Computer_Screensaver;
             RegistryHelper.InitValues();
-
-
-            // PowerManager.IsMonitorOnChanged += new EventHandler(MonitorOnChanged);
-            //// . . .
-
-            //// VM = DataContext as MainViewModel;
-
-            //// register for console display state system event 
-            //var hwnd = this.Handle;
-
-            //_ScreenStateNotify = Win32Helper.RegisterPowerSettingNotification(hwnd, ref Win32Helper.GUID_CONSOLE_DISPLAY_STATE, Win32Helper.DEVICE_NOTIFY_WINDOW_HANDLE);
-            //_HwndSource = HwndSource.FromHwnd(hwnd);
-            //_HwndSource.AddHook(HwndHook);
 
             this.WindowState = FormWindowState.Minimized;
             this.ShowInTaskbar = false;
