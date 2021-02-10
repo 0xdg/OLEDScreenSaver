@@ -93,10 +93,10 @@ namespace OLEDScreenSaver
         {
             LogHelper.Log("HideFormCallback");
             Invoke(new Action(() => {
-                // Hide();
+                Hide();
                 this.WindowState = FormWindowState.Minimized;
                 // Cursor.Show();
-                // SendToBack();
+                SendToBack();
                 TopMost = false;
                 Win32Helper.ShowCursor();
             }));
@@ -108,10 +108,10 @@ namespace OLEDScreenSaver
             Invoke(new Action(() => {
                 if (SetFormToOLEDScreen())
                 {
-                    // Show();
+                    Show();
                     this.WindowState = FormWindowState.Maximized;
                     // Cursor.Hide();
-                    // BringToFront();
+                    BringToFront();
                     TopMost = true;
                     Win32Helper.HideCursor();
                 }
